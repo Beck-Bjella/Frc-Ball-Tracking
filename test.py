@@ -126,9 +126,9 @@ def main():
    vision_nt = NetworkTables.getTable('Vision')
 
    # Allocating new images is very expensive, always try to preallocate
-   img = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
+   img = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
    # Wait for NetworkTables to start
-   time.sleep(0.5)
+   time.sleep(5)
 
    while True:
       start_time = time.time()
