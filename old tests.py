@@ -1,11 +1,3 @@
-from cscore import CameraServer
-from networktables import NetworkTables
-
-import cv2
-import json
-import numpy as np
-import time
-
 import numpy
 import cv2
 from enum import Enum
@@ -109,49 +101,51 @@ class GripPipeline:
                          borderType=border_type, borderValue=border_value)
 
 
-def main():
-   with open('/boot/frc.json') as f:
-      config = json.load(f)
-   camera = config['cameras'][0]
-	
-   width = camera['width']
-   height = camera['height']
-   cserver = CameraServer()
-   cserver.startAutomaticCapture()
-   pipeline = GripPipeline()
-   input_stream = cserver.getVideo()
-   output_stream = cserver.putVideo('Processed', width, height)
-	
-   # Table for vision output information
-   vision_nt = NetworkTables.getTable('Vision')
+def get_ball_color(x, y):
+    color = False
 
-   # Allocating new images is very expensive, always try to preallocate
-   img = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
-   # Wait for NetworkTables to start
-   time.sleep(0.5)
+    r, g, b = frame[y, x]
+    if r >= b:
+        color = "blue"
+    elif b >= r:
+        color = "red"
 
-   while True:
-      start_time = time.time()
+    return color
 
-      frame_time, input_img = input_stream.grabFrame(img)
-      output_img = np.copy(input_img)
 
-      # Notify output of error and skip iteration
-      if frame_time == 0:
-         output_stream.notifyError(input_stream.getError())
-         continue
+def render_frame(x, y, w, color):
+    canvas = numpy.zeros((480, 640, 3), dtype="uint8")
 
-      # Convert to HSV and threshold image
-      pipeline.process(input_img)
-      x, y, w, h = cv2.boundingRect(numpy.array(pipeline.cv_erode_output))
+    if color == "red":
+        canvas = cv2.circle(canvas, (x, y), w, (0, 0, 255), -1)
+    elif color == "blue":
+        canvas = cv2.circle(canvas, (x, y), w, (255, 0, 0), -1)
 
-        
-      vision_nt.putNumber('target_x', x)
-      vision_nt.putNumber('target_y', y)
+    cv2.imshow("Canvas", canvas)
 
-      processing_time = time.time() - start_time
-      fps = 1 / processing_time
-      cv2.putText(output_img, str(round(fps, 1)), (0, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
-      output_stream.putFrame(output_img)
 
-main()
+if __name__ == '__main__':
+    capture = cv2.VideoCapture(0)
+    if not capture.isOpened():
+        raise IOError("Cannot open webcam")
+
+    pipeline = GripPipeline()
+
+    while True:
+        ret, frame = capture.read()
+
+        pipeline.process(frame)
+        ball_x, ball_y, ball_width, ball_height = cv2.boundingRect(numpy.array(pipeline.cv_erode_output))
+
+        #  ------------------- RENDERING CODE ------------------
+        ball_color = get_ball_color(ball_x, ball_y)
+
+        render_frame(ball_x, ball_y, ball_width, ball_color)
+        #  ------------------- RENDERING CODE ------------------
+
+        c = cv2.waitKey(1)
+        if c == 27:
+            break
+
+    capture.release()
+    cv2.destroyAllWindows()
