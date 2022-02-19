@@ -132,7 +132,7 @@ def main():
 
    while True:
       start_time = time.time()
-
+      print(input_stream)
       frame_time, input_img = input_stream.grabFrame(img)
       output_img = np.copy(input_img)
 
@@ -144,11 +144,11 @@ def main():
       # Convert to HSV and threshold image
       pipeline.process(input_img)
       x, y, w, h = cv2.boundingRect(numpy.array(pipeline.cv_erode_output))
-
+      print(x, y)
         
       vision_nt.putNumber('target_x', x)
       vision_nt.putNumber('target_y', y)
-
+    
       processing_time = time.time() - start_time
       fps = 1 / processing_time
       cv2.putText(output_img, str(round(fps, 1)), (0, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
