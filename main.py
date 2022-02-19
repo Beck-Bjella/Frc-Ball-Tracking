@@ -3,7 +3,6 @@ from networktables import NetworkTables
 import numpy
 import cv2
 from enum import Enum
-import json
 
 
 class GripPipeline:
