@@ -109,6 +109,8 @@ def main():
     left_threshold = 0.48
     right_threshold = 0.52
 
+    bottom_threshold = 0.9
+
     screen_width = 160
     screen_height = 90
 
@@ -149,6 +151,7 @@ def main():
                     best_detection = [x, y, r]
 
         heading = 0
+        close_to_bottom = 0
 
         if best_detection:
             if 0 < best_detection[0] < (screen_width * left_threshold):
@@ -156,9 +159,13 @@ def main():
             elif best_detection[0] > (screen_width * right_threshold):
                 heading = 1
 
+            if best_detection[1] > (screen_height * bottom_threshold):
+                close_to_bottom = 1
+
         vision_nt.putNumber('x', int(best_detection[0]))
         vision_nt.putNumber('y', int(best_detection[1]))
         vision_nt.putNumber('r', int(best_detection[2]))
+        vision_nt.putNumber('bottom', close_to_bottom)
         vision_nt.putNumber('heading', heading)
 
 
