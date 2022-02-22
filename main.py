@@ -136,15 +136,14 @@ def main():
         pipeline.process(input_img)
         output_image = numpy.array(pipeline.hsv_threshold_output)
 
-        circles = cv2.HoughCircles(output_image, cv2.HOUGH_GRADIENT, 1, minDist=10,
-                                   param1=100, param2=5, minRadius=1, maxRadius=160)
+        circles = cv2.HoughCircles(output_image, cv2.HOUGH_GRADIENT, 1, minDist=10, param1=100, param2=10, minRadius=5, maxRadius=160)
 
         best_detection = None
         biggest_radius = 0
 
         if circles is not None:
             for circle in circles[0, :]:
-                x, y, r = circle[0], circle[1], circle[2]
+                x, y, r = int(circle[0]), int(circle[1]), int(circle[2])
 
                 if r > biggest_radius:
                     biggest_radius = r
@@ -158,6 +157,8 @@ def main():
                 heading = -1
             elif best_detection[0] > (screen_width * right_threshold):
                 heading = 1
+            else:
+                heading = 2
 
             if best_detection[1] > (screen_height * bottom_threshold):
                 close_to_bottom = 1
