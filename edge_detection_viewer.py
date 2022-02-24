@@ -28,7 +28,7 @@ class GripPipeline:
         self.__cv_erode_src = self.hsv_threshold_output
         self.__cv_erode_kernel = None
         self.__cv_erode_anchor = (-1, -1)
-        self.__cv_erode_iterations = 0.5
+        self.__cv_erode_iterations = 2
         self.__cv_erode_bordertype = cv2.BORDER_CONSTANT
         self.__cv_erode_bordervalue = (-1)
 
@@ -37,7 +37,7 @@ class GripPipeline:
         self.__cv_dilate_src = self.cv_erode_output
         self.__cv_dilate_kernel = None
         self.__cv_dilate_anchor = (-1, -1)
-        self.__cv_dilate_iterations = 1.0
+        self.__cv_dilate_iterations = 2
         self.__cv_dilate_bordertype = cv2.BORDER_CONSTANT
         self.__cv_dilate_bordervalue = (-1)
 
@@ -122,13 +122,15 @@ class GripPipeline:
 
 
 if __name__ == '__main__':
-    red_hue_threshold = [0, 19]
-    red_saturation_threshold = [101, 178]
-    red_value_threshold = [74, 174]
 
-    blue_hue_threshold = [97, 109]
-    blue_saturation_threshold = [83, 225]
-    blue_value_threshold = [66, 181]
+    # In Robotics Room Calibrations
+    red_hue_threshold = [0, 9]
+    red_saturation_threshold = [143, 214]
+    red_value_threshold = [80, 255]
+
+    blue_hue_threshold = [77, 154]
+    blue_saturation_threshold = [109, 205]
+    blue_value_threshold = [109, 230]
 
     pipeline = GripPipeline(blue_hue_threshold, blue_saturation_threshold, blue_value_threshold)
 
@@ -136,8 +138,8 @@ if __name__ == '__main__':
 
     while True:
         ret, frame = cap.read()
-        new_width = int(frame.shape[1] / 4)
-        new_height = int(frame.shape[0] / 4)
+        new_width = int(160)
+        new_height = int(90)
 
         img_small = cv2.resize(frame, (new_width, new_height))
 
@@ -158,9 +160,10 @@ if __name__ == '__main__':
                     best_detection = [x, y, r]
 
         if best_detection:
-            cv2.circle(img_small, (best_detection[0], best_detection[1] + best_detection[2]), best_detection[2], (0, 255, 0), 4)
+            cv2.circle(img_small, (best_detection[0], best_detection[1] + (best_detection[2] * 1)), best_detection[2], (0, 255, 0), 4)
 
         cv2.imshow("output2", img_small)
+        cv2.imshow("test", output_image)
 
         key = cv2.waitKey(1)
         if key == 27:

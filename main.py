@@ -30,7 +30,7 @@ class GripPipeline:
         self.__cv_erode_src = self.hsv_threshold_output
         self.__cv_erode_kernel = None
         self.__cv_erode_anchor = (-1, -1)
-        self.__cv_erode_iterations = 0.5
+        self.__cv_erode_iterations = 2
         self.__cv_erode_bordertype = cv2.BORDER_CONSTANT
         self.__cv_erode_bordervalue = (-1)
 
@@ -39,7 +39,7 @@ class GripPipeline:
         self.__cv_dilate_src = self.cv_erode_output
         self.__cv_dilate_kernel = None
         self.__cv_dilate_anchor = (-1, -1)
-        self.__cv_dilate_iterations = 1.0
+        self.__cv_dilate_iterations = 2
         self.__cv_dilate_bordertype = cv2.BORDER_CONSTANT
         self.__cv_dilate_bordervalue = (-1)
 
@@ -126,13 +126,14 @@ class GripPipeline:
 def main():
     team_color = "red"
 
-    red_hue_threshold = [0, 19]
-    red_saturation_threshold = [101, 178]
-    red_value_threshold = [74, 174]
+    # In Robotics Room Calibrations
+    red_hue_threshold = [0, 9]
+    red_saturation_threshold = [143, 214]
+    red_value_threshold = [80, 255]
 
-    blue_hue_threshold = [97, 109]
-    blue_saturation_threshold = [83, 225]
-    blue_value_threshold = [66, 181]
+    blue_hue_threshold = [77, 154]
+    blue_saturation_threshold = [109, 205]
+    blue_value_threshold = [109, 230]
 
     # red_hue_threshold = [0.0, 22.0]
     # red_saturation_threshold = [76.17461099255837, 254.73577810920378]
@@ -167,10 +168,10 @@ def main():
         pipeline = GripPipeline(blue_hue_threshold, blue_saturation_threshold, blue_value_threshold)
 
     while True:
-        frame_time, input_img = input_stream.grabFrame(img)
+        frame_time, frame = input_stream.grabFrame(img)
 
-        pipeline.process(input_img)
-        output_image = numpy.array(pipeline.hsv_threshold_output)
+        pipeline.process(frame)
+        output_image = pipeline.cv_dilate_output
 
         circles = cv2.HoughCircles(output_image, cv2.HOUGH_GRADIENT, 1, minDist=10, param1=100, param2=10, minRadius=5, maxRadius=160)
 
