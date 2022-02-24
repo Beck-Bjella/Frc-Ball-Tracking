@@ -135,18 +135,10 @@ def main():
     blue_saturation_threshold = [109, 205]
     blue_value_threshold = [109, 230]
 
-    # red_hue_threshold = [0.0, 22.0]
-    # red_saturation_threshold = [76.17461099255837, 254.73577810920378]
-    # red_value_threshold = [64.20863309352518, 254.14949555665729]
-    #
-    # blue_hue_threshold = [96.0, 109.0]
-    # blue_saturation_threshold = [76.17461099255837, 254.73577810920378]
-    # blue_value_threshold = [64.20863309352518, 254.14949555665729]
-
     left_threshold = 0.48
     right_threshold = 0.52
 
-    bottom_threshold = 0.9
+    # bottom_threshold = 0.9
 
     screen_width = 160
     screen_height = 90
