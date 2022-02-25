@@ -11,7 +11,7 @@ class GripPipelinePublish:
     """
 
     def __init__(self):
-        BlurType = Enum('BlurType', 'Box_Blur Gaussian_Blur Median_Filter Bilateral_Filter')
+        self.BlurType = Enum('BlurType', 'Box_Blur Gaussian_Blur Median_Filter Bilateral_Filter')
 
         """initializes all values to presets or None if need to be set
         """
