@@ -235,7 +235,8 @@ def main():
         pipeline.process(frame)
         output_data = pipeline.filter_contours_output
 
-        vision_nt.putNumberArray('contours', output_data)
+        vision_nt.putNumber('x', int(output_data[0]))
+        vision_nt.putNumber('y', int(output_data[1]))
 
 
 if __name__ == '__main__':
