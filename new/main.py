@@ -30,7 +30,7 @@ class GripPipelinePublish:
         self.resize_image_1_output = None
 
         self.__blur_input = self.resize_image_1_output
-        self.__blur_type = BlurType.Gaussian_Blur
+        self.__blur_type = self.BlurType.Gaussian_Blur
         self.__blur_radius = 4.2042079272570945
 
         self.blur_output = None
