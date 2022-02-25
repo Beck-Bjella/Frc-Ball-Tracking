@@ -1,5 +1,7 @@
+from cscore import CameraServer
+from networktables import NetworkTables
+import numpy
 import cv2
-import numpy as np
 from enum import Enum
 
 
@@ -121,7 +123,8 @@ class GripPipeline:
                           borderType=border_type, borderValue=border_value)
 
 
-if __name__ == '__main__':
+def main():
+    team_color = "red"
 
     # In Robotics Room Calibrations
     red_hue_threshold = [0, 9]
@@ -132,25 +135,32 @@ if __name__ == '__main__':
     blue_saturation_threshold = [109, 205]
     blue_value_threshold = [109, 230]
 
-    # In Trojan Circle Room Calibrations
-    # red_hue_threshold = [0, 9]
-    # red_saturation_threshold = [143, 214]
-    # red_value_threshold = [80, 255]
-    #
-    # blue_hue_threshold = [77, 154]
-    # blue_saturation_threshold = [109, 205]
-    # blue_value_threshold = [109, 230]
+    left_threshold = 0.48
+    right_threshold = 0.52
 
-    pipeline = GripPipeline(blue_hue_threshold, blue_saturation_threshold, blue_value_threshold)
+    # bottom_threshold = 0.9
 
-    cap = cv2.VideoCapture(0)
+    screen_width = 160
+    screen_height = 90
+
+    # ----------------------------
+
+    cserver = CameraServer()
+    cserver.startAutomaticCapture()
+
+    input_stream = cserver.getVideo()
+    img = numpy.zeros(shape=(screen_width, screen_height, 3), dtype=numpy.uint8)
+
+    NetworkTables.initialize(server='10.22.64.2')
+    vision_nt = NetworkTables.getTable('Vision')
+
+    if team_color == "red":
+        pipeline = GripPipeline(red_hue_threshold, red_saturation_threshold, red_value_threshold)
+    else:
+        pipeline = GripPipeline(blue_hue_threshold, blue_saturation_threshold, blue_value_threshold)
 
     while True:
-        ret, frame = cap.read()
-        new_width = int(160)
-        new_height = int(90)
-
-        img_small = cv2.resize(frame, (new_width, new_height))
+        frame_time, frame = input_stream.grabFrame(img)
 
         pipeline.process(frame)
         output_image = pipeline.cv_dilate_output
@@ -168,12 +178,23 @@ if __name__ == '__main__':
                     biggest_radius = r
                     best_detection = [x, y, r]
 
+        heading = 0
+        # close_to_bottom = 0
+
         if best_detection:
-            cv2.circle(img_small, (best_detection[0], best_detection[1] + (best_detection[2] * 1)), best_detection[2], (0, 255, 0), 4)
+            if 0 < best_detection[0] < (screen_width * left_threshold):
+                heading = -1
+            elif best_detection[0] > (screen_width * right_threshold):
+                heading = 1
+            else:
+                heading = 2
+            #
+            # if best_detection[1] > (screen_height * bottom_threshold):
+            #     close_to_bottom = 1
 
-        cv2.imshow("output2", img_small)
-        cv2.imshow("test", output_image)
+        # vision_nt.putNumber('bottom', close_to_bottom)
+        vision_nt.putNumber('heading', heading)
 
-        key = cv2.waitKey(1)
-        if key == 27:
-            break
+
+if __name__ == '__main__':
+    main()
