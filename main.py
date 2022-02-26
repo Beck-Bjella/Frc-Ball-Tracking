@@ -141,7 +141,7 @@ def main():
     NetworkTables.initialize(server='10.22.64.2')
     vision_nt = NetworkTables.getTable('Vision')
 
-    pipeline = GripPipelineFinal()
+    pipeline = GripPipelineFinal(screen_width, screen_height)
 
     while True:
         frame_time, frame = input_stream.grabFrame(img)
