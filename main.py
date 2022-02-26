@@ -146,12 +146,13 @@ def main():
     while True:
         frame_time, frame = input_stream.grabFrame(img)
         output_unprocessed.putFrame(frame)
-        detection_count = 0
+
         pipeline.process(frame)
         output_data = pipeline.find_contours_output
 
         output_image = cv2.resize(frame, (screen_height, screen_width))
 
+        detection_count = 0
         biggest_radius = 0
         best_detection = False
 
