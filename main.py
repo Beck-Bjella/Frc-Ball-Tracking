@@ -6,11 +6,11 @@ from enum import Enum
 
 
 class GripPipelineFinal:
-    def __init__(self, screen_width, screen_height):
+    def __init__(self):
         self.BlurType = Enum('self.BlurType', 'Box_Blur Gaussian_Blur Median_Filter Bilateral_Filter')
 
-        self.__resize_image_width = screen_width
-        self.__resize_image_height = screen_height
+        self.__resize_image_width = 480.0
+        self.__resize_image_height = 360.0
         self.__resize_image_interpolation = cv2.INTER_CUBIC
 
         self.resize_image_output = None
@@ -141,16 +141,16 @@ def main():
     NetworkTables.initialize(server='10.22.64.2')
     vision_nt = NetworkTables.getTable('Vision')
 
-    pipeline = GripPipelineFinal(screen_width, screen_height)
+    pipeline = GripPipelineFinal()
 
     while True:
         frame_time, frame = input_stream.grabFrame(img)
         output_unprocessed.putFrame(frame)
-
+        
         pipeline.process(frame)
         output_data = pipeline.find_contours_output
 
-        output_image = cv2.resize(frame, (screen_height, screen_width))
+        output_image = cv2.resize(frame, (screen_width, screen_height))
 
         detection_count = 0
         biggest_radius = 0
