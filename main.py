@@ -6,11 +6,11 @@ from enum import Enum
 
 
 class GripPipelineFinal:
-    def __init__(self):
+    def __init__(self, screen_width, screen_height):
         self.BlurType = Enum('self.BlurType', 'Box_Blur Gaussian_Blur Median_Filter Bilateral_Filter')
 
-        self.__resize_image_width = 480.0
-        self.__resize_image_height = 360.0
+        self.__resize_image_width = screen_width
+        self.__resize_image_height = screen_height
         self.__resize_image_interpolation = cv2.INTER_CUBIC
 
         self.resize_image_output = None
