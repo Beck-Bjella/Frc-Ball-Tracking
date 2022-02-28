@@ -121,8 +121,8 @@ class GripPipelineFinal:
 def main():
     # team_color = "red"
 
-    left_threshold = 0.40
-    right_threshold = 0.60
+    left_threshold = 0.20
+    right_threshold = 0.80
 
     screen_width = 480
     screen_height = 360
