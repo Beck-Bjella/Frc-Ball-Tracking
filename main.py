@@ -119,8 +119,6 @@ class GripPipelineFinal:
 
 
 def main():
-    # team_color = "red"
-
     left_threshold = 0.20
     right_threshold = 0.80
 
@@ -134,7 +132,6 @@ def main():
 
     input_stream = cserver.getVideo()
     output = cserver.putVideo('Processed', width=screen_width, height=screen_height)
-    output_unprocessed = cserver.putVideo('Raw', width=screen_width, height=screen_height)
 
     img = numpy.zeros(shape=(screen_height, screen_width, 3), dtype=numpy.uint8)
 
@@ -145,8 +142,7 @@ def main():
 
     while True:
         frame_time, frame = input_stream.grabFrame(img)
-        output_unprocessed.putFrame(frame)
-        
+
         pipeline.process(frame)
         output_data = pipeline.find_contours_output
 
@@ -169,19 +165,6 @@ def main():
                     biggest_radius = r
                     best_detection = {"x": x, "y": y, "r": r}
 
-                # blue, green, red = output_image[x, y]
-                #
-                # if team_color == "all":
-                #
-                # if blue > red:
-                #     color = "red"
-                # else:
-                #     color = "blue"
-
-                # if r > biggest_radius and color == team_color:
-                #     biggest_radius = r
-                #     best_detection = {"x": x, "y": y, "r": r}
-
         if best_detection:
             if 0 < best_detection["x"] < (screen_width * left_threshold):
                 heading = -1
@@ -191,10 +174,13 @@ def main():
                 heading = 2
 
             vision_nt.putNumber('heading', heading)
+            vision_nt.putNumber('x', best_detection["x"])
+            vision_nt.putNumber('y', best_detection["y"])
+
             cv2.circle(img=output_image, center=(best_detection["x"], best_detection["y"]), radius=best_detection["r"], color=(0, 255, 0), thickness=5)
             print("x:", best_detection["x"], "y:", best_detection["y"], "r:", best_detection["r"], "heading:", heading)
 
-        vision_nt.putNumber("detection_count", detection_count)
+        vision_nt.putNumber("detectionCount", detection_count)
         output.putFrame(output_image)
 
 
