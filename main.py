@@ -7,6 +7,7 @@ from enum import Enum
 
 class GripPipelineFinal:
     def __init__(self):
+        self.__resize_image_input = None
         self.BlurType = Enum('self.BlurType', 'Box_Blur Gaussian_Blur Median_Filter Bilateral_Filter')
 
         self.__resize_image_width = 480.0
@@ -78,7 +79,7 @@ class GripPipelineFinal:
 
     @staticmethod
     def __resize_image(input, width, height, interpolation):
-        return cv2.resize(input, ((int)(width), (int)(height)), 0, 0, interpolation)
+        return cv2.resize(input, (int(width), int(height)), 0, 0, interpolation)
 
     @staticmethod
     def __hsv_threshold(input, hue, sat, val):
@@ -87,21 +88,21 @@ class GripPipelineFinal:
 
     @staticmethod
     def __cv_erode(src, kernel, anchor, iterations, border_type, border_value):
-        return cv2.erode(src, kernel, anchor, iterations=(int)(iterations + 0.5),
+        return cv2.erode(src, kernel, anchor, iterations=int(iterations + 0.5),
                          borderType=border_type, borderValue=border_value)
 
     @staticmethod
     def __cv_dilate(src, kernel, anchor, iterations, border_type, border_value):
-        return cv2.dilate(src, kernel, anchor, iterations=(int)(iterations + 0.5), borderType=border_type, borderValue=border_value)
+        return cv2.dilate(src, kernel, anchor, iterations=int(iterations + 0.5), borderType=border_type, borderValue=border_value)
 
     def __blur(self, src, type, radius):
-        if (type is self.BlurType.Box_Blur):
+        if type is self.BlurType.Box_Blur:
             ksize = int(2 * round(radius) + 1)
             return cv2.blur(src, (ksize, ksize))
-        elif (type is self.BlurType.Gaussian_Blur):
+        elif type is self.BlurType.Gaussian_Blur:
             ksize = int(6 * round(radius) + 1)
             return cv2.GaussianBlur(src, (ksize, ksize), round(radius))
-        elif (type is self.BlurType.Median_Filter):
+        elif type is self.BlurType.Median_Filter:
             ksize = int(2 * round(radius) + 1)
             return cv2.medianBlur(src, ksize)
         else:
@@ -109,7 +110,7 @@ class GripPipelineFinal:
 
     @staticmethod
     def __find_contours(input, external_only):
-        if (external_only):
+        if external_only:
             mode = cv2.RETR_EXTERNAL
         else:
             mode = cv2.RETR_LIST
